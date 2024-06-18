@@ -1,0 +1,15 @@
+version: '3.9'
+services: 
+    db:
+        image: postgres
+        restart: always
+        environment:
+         - POSTGRES_USER=postgres
+         - POSTGRES_PASSWORD=postgres
+         - POSTGRES_DB=learnFrenchDb
+        volumes:
+          - postgres-data:/var/lib/postgresql/data
+        ports:
+          - '5433:5433'
+volumes:
+    postgres-data:
