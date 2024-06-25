@@ -14,21 +14,22 @@ export const generateCompleteQuestion = async () =>  {
         (tanto la pregunta como las respuestas pueden variar y ser de diversos temas):
         {
           "question": {
-            "text": "Complete la frase con la opción correcta: \"Je vais ___ cinéma ce soir.\"",
+            "type" : "complete_with_options",
+            "content": "Complete la frase con la opción correcta: \"Je vais ___ cinéma ce soir.\"",
             "options": [
               {
-                "option": "au",
-                "correct": true,
+                "content": "au",
+                "right": true,
                 "feedback": "Correcto, 'au'. 'Au' se usa antes de 'cinéma' para indicar el destino. Es una contracción de 'à le'."
               },
               {
-                "option": "à",
-                "correct": false,
+                "content": "à",
+                "right": false,
                 "feedback": "Incorrecto. 'À' se utiliza antes de palabras que no se combinan con el artículo definido, como 'à la'. En este caso, 'cinéma' requiere 'au'."
               },
               {
-                "option": "aux",
-                "correct": false,
+                "content": "aux",
+                "right": false,
                 "feedback": "Incorrecto. 'Aux' es la forma plural de 'au'. 'Cinéma' es singular, así que la forma correcta es 'au'."
               }
             ]
@@ -45,7 +46,7 @@ export const generateCompleteQuestion = async () =>  {
         - Asegúrate de que la pregunta sea clara y la opción correcta sea educativa para el usuario.
         - Respondeme únicamente lo que estoy solicitando (OBLIGATORIO).
       `
-    }
+    },
   ])
   
   return generatedQuestion
