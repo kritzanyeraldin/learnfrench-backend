@@ -1,0 +1,236 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int                    @id @default(autoincrement())
+  username             String
+  email                String                 @unique
+  password             String
+  createdAt            DateTime?              @default(now())
+  updatedAt            DateTime?              @updatedAt
+  Chapter              Chapter[]
+  Lesson               Lesson[]
+  CompletedUserLesson  CompletedUserLesson[]
+  QualifyingExamAnswer QualifyingExamAnswer[]
+  SurveyAnswer         SurveyAnswer[]
+  CompletedUserChapter CompletedUserChapter[]
+}
+
+model Level {
+  id                           Int                            @id @default(autoincrement())
+  name                         String
+  alias                        String                         @unique
+  createdAt                    DateTime?                      @default(now())
+  updatedAt                    DateTime?                      @updatedAt
+  Sublevel                     Sublevel[]
+  Chapter                      Chapter[]
+  Lesson                       Lesson[]
+  QualifyingExamQuestion       QualifyingExamQuestion[]
+  QualifyingExamQuestionOption QualifyingExamQuestionOption[]
+  QualifyingExamAnswer         QualifyingExamAnswer[]
+}
+
+model Sublevel {
+  id                           Int                            @id @default(autoincrement())
+  name                         String
+  alias                        String                         @unique
+  levelId                      Int
+  level                        Level                          @relation(fields: [levelId], references: [id])
+  createdAt                    DateTime?                      @default(now())
+  updatedAt                    DateTime?                      @updatedAt
+  Chapter                      Chapter[]
+  Lesson                       Lesson[]
+  QualifyingExamQuestion       QualifyingExamQuestion[]
+  QualifyingExamQuestionOption QualifyingExamQuestionOption[]
+  QualifyingExamAnswer         QualifyingExamAnswer[]
+  CompletedUserChapter         CompletedUserChapter[]
+}
+
+model Chapter {
+  id                           Int                            @id @default(autoincrement())
+  name                         String
+  userId                       Int?
+  levelId                      Int
+  sublevelId                   Int
+  createdAt                    DateTime?                      @default(now())
+  updatedAt                    DateTime?                      @updatedAt
+  user                         User?                          @relation(fields: [userId], references: [id])
+  level                        Level                          @relation(fields: [levelId], references: [id])
+  sublevel                     Sublevel                       @relation(fields: [sublevelId], references: [id])
+  Lesson                       Lesson[]
+  QualifyingExamQuestion       QualifyingExamQuestion[]
+  QualifyingExamQuestionOption QualifyingExamQuestionOption[]
+  QualifyingExamAnswer         QualifyingExamAnswer[]
+  CompletedUserLesson          CompletedUserLesson[]
+  CompletedUserChapter         CompletedUserChapter[]
+}
+
+model Lesson {
+  id                           Int                            @id @default(autoincrement())
+  name                         String
+  description                  String
+  userId                       Int?
+  levelId                      Int
+  sublevelId                   Int
+  chapterId                    Int
+  createdAt                    DateTime?                      @default(now())
+  updatedAt                    DateTime?                      @updatedAt
+  user                         User?                          @relation(fields: [userId], references: [id])
+  level                        Level                          @relation(fields: [levelId], references: [id])
+  sublevel                     Sublevel                       @relation(fields: [sublevelId], references: [id])
+  chapter                      Chapter                        @relation(fields: [chapterId], references: [id])
+  CompletedUserLesson          CompletedUserLesson[]
+  QualifyingExamQuestion       QualifyingExamQuestion[]
+  QualifyingExamQuestionOption QualifyingExamQuestionOption[]
+  QualifyingExamAnswer         QualifyingExamAnswer[]
+}
+
+model CompletedUserLesson {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  lessonId  Int
+  chapterId Int
+  user      User    @relation(fields: [userId], references: [id])
+  lesson    Lesson  @relation(fields: [lessonId], references: [id])
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+}
+
+model CompletedUserChapter {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  sublevelId Int
+  chapterId  Int
+  user       User     @relation(fields: [userId], references: [id])
+  sublevel   Sublevel @relation(fields: [sublevelId], references: [id])
+  chapter    Chapter  @relation(fields: [chapterId], references: [id])
+}
+
+model ExamQuestionType {
+  id                           Int                            @id @default(autoincrement())
+  type                         TExamQuestion                  @unique
+  createdAt                    DateTime?                      @default(now())
+  updatedAt                    DateTime?                      @updatedAt
+  QualifyingExamQuestion       QualifyingExamQuestion[]
+  QualifyingExamQuestionOption QualifyingExamQuestionOption[]
+  QualifyingExamAnswer         QualifyingExamAnswer[]
+}
+
+enum TExamQuestion {
+  complete_with_options
+  complete_with_text
+  order_sentece
+  repeat_sentece
+}
+
+model QualifyingExamQuestion {
+  id                           Int                            @id @default(autoincrement())
+  examQuestionTypeId           Int
+  levelId                      Int
+  sublevelId                   Int
+  chapterId                    Int
+  lessonId                     Int
+  question                     String
+  createdAt                    DateTime?                      @default(now())
+  updatedAt                    DateTime?                      @updatedAt
+  examQuestionType             ExamQuestionType               @relation(fields: [examQuestionTypeId], references: [id])
+  level                        Level                          @relation(fields: [levelId], references: [id])
+  sublevel                     Sublevel                       @relation(fields: [sublevelId], references: [id])
+  chapter                      Chapter                        @relation(fields: [chapterId], references: [id])
+  lesson                       Lesson                         @relation(fields: [lessonId], references: [id])
+  QualifyingExamQuestionOption QualifyingExamQuestionOption[]
+  QualifyingExamAnswer         QualifyingExamAnswer[]
+}
+
+model QualifyingExamQuestionOption {
+  id                       Int                    @id @default(autoincrement())
+  qualifyingExamQuestionId Int
+  examQuestionTypeId       Int
+  levelId                  Int
+  sublevelId               Int
+  chapterId                Int
+  lessonId                 Int
+  content                  String
+  right                    Boolean
+  createdAt                DateTime?              @default(now())
+  updatedAt                DateTime?              @updatedAt
+  qualifyingExamQuestion   QualifyingExamQuestion @relation(fields: [qualifyingExamQuestionId], references: [id])
+  examQuestionType         ExamQuestionType       @relation(fields: [examQuestionTypeId], references: [id])
+  level                    Level                  @relation(fields: [levelId], references: [id])
+  sublevel                 Sublevel               @relation(fields: [sublevelId], references: [id])
+  chapter                  Chapter                @relation(fields: [chapterId], references: [id])
+  lesson                   Lesson                 @relation(fields: [lessonId], references: [id])
+}
+
+model QualifyingExamAnswer {
+  id                       Int                     @id @default(autoincrement())
+  userId                   Int
+  examQuestionTypeId       Int
+  levelId                  Int
+  sublevelId               Int
+  chapterId                Int
+  lessonId                 Int
+  answer                   String
+  createdAt                DateTime?               @default(now())
+  updatedAt                DateTime?               @updatedAt
+  user                     User                    @relation(fields: [userId], references: [id])
+  examQuestionType         ExamQuestionType        @relation(fields: [examQuestionTypeId], references: [id])
+  level                    Level                   @relation(fields: [levelId], references: [id])
+  sublevel                 Sublevel                @relation(fields: [sublevelId], references: [id])
+  chapter                  Chapter                 @relation(fields: [chapterId], references: [id])
+  lesson                   Lesson                  @relation(fields: [lessonId], references: [id])
+  QualifyingExamQuestion   QualifyingExamQuestion? @relation(fields: [qualifyingExamQuestionId], references: [id])
+  qualifyingExamQuestionId Int?
+}
+
+model Survey {
+  id             Int              @id @default(autoincrement())
+  title          String
+  createdAt      DateTime?        @default(now())
+  updatedAt      DateTime?        @updatedAt
+  SurveyQuestion SurveyQuestion[]
+  SurveyAnswer   SurveyAnswer[]
+}
+
+model SurveyQuestion {
+  id           Int            @id @default(autoincrement())
+  surveyId     Int
+  question     String
+  options      String[]
+  survey       Survey         @relation(fields: [surveyId], references: [id])
+  SurveyAnswer SurveyAnswer[]
+}
+
+model SurveyAnswer {
+  id               Int            @id @default(autoincrement())
+  userId           Int
+  surveyId         Int
+  surveyQuestionId Int
+  answer           String
+  user             User           @relation(fields: [userId], references: [id])
+  survey           Survey         @relation(fields: [surveyId], references: [id])
+  surveyQuestion   SurveyQuestion @relation(fields: [surveyQuestionId], references: [id])
+}
+
+model Vocabulary {
+  id      Int    @id @default(autoincrement())
+  name    String
+  content String
+}
+
+model Grammar {
+  id      Int    @id @default(autoincrement())
+  name    String
+  content String
+}
