@@ -1,15 +1,25 @@
-import Groq from "groq-sdk";
-import { groqService } from './services/index.js'
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import usersRoutes from "./routes/user.routes.js";
+import levelRoutes from "./routes/level.routes.js";
+import sublevelRoutes from "./routes/sublevel.routes.js";
 
-export async function main() {
-  const completions = await Promise.all([
-    groqService.generateCompleteQuestion(),
-    groqService.generateCompleteQuestion()
-  ])
+dotenv.config();
+const app = express();
 
-  completions.forEach(completion => {
-    console.log(completion.choices[0]?.message?.content ? JSON.parse(completion.choices[0]?.message?.content) : "");
+app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
   })
-}
+);
 
-main();
+app.use("/api", usersRoutes);
+app.use("/api", levelRoutes);
+app.use("/api", sublevelRoutes);
+
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  console.log("Server on port", port);
+});
