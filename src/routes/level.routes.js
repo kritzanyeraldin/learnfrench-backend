@@ -73,7 +73,7 @@ router.post("/new-level", async (req, res) => {
 
 router.get("/all-levels", async (req, res) => {
   try {
-    const allLevels = await prisma.user.findMany();
+    const allLevels = await prisma.level.findMany();
     return res.json(allLevels);
   } catch (error) {
     return res.status(500).json({ message: "error" });
