@@ -1,6 +1,15 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateOrderSentenceQuestion = async () => {
+const schema = {
+  question: {
+    type: "order_sentence",
+    content: "est / la / France / capitale / de / Paris",
+    answer: "France est la capitale de Paris",
+    feedback: "feedback",
+  },
+};
+
+export const generateOrderSentenceQuestion = async (lesson) => {
   const generatedQuestion = await getChatCompletion([
     {
       role: "system",
@@ -10,17 +19,13 @@ export const generateOrderSentenceQuestion = async () => {
           Tu tarea es generar preguntas para reordenar, que ayudan al usuario
           a mejorar su vocabulario, gramática y comprensión.
         
-          Las respuestas que generes necesito que tomen la siguiente estructura,
-          y no olvides desordenar las palabras del texto de la pregunta.
-          (tanto la pregunta como las respuestas pueden variar y ser de diversos temas):
-          {
-            "question": {
-              "type" : "order_sentence", 
-              "content": "est / la / France / capitale / de / Paris",
-              "answer": "France est la capitale de Paris" ,
-          "feedback": "feedback", 
-            }
-          }  
+          REGLAS:
+            - Debes responder con la siguiente estructura ${JSON.stringify(
+              schema
+            )} de forma OBLIGATORIA en formato JSON.
+            - No olvides desordenar las palabras del texto de la pregunta.
+            - Tanto la pregunta como las respuestas deben estar realacionadas al tema ${lesson}) 
+          
       `,
     },
     {

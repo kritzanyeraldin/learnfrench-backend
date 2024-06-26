@@ -1,6 +1,18 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateCompleteTextQuestion = async () => {
+const schema = {
+  question: {
+    type: "complete_with_text",
+    content: "¿Qué puedes responder si alguien dice ¡Bonjour! Ca va?",
+    answer: "si",
+    feedback: {
+      correcto: "feedbackcorrecto",
+      incorrecto: "feedbackincorrecto",
+    },
+  },
+};
+
+export const generateCompleteTextQuestion = async (lesson) => {
   const generatedQuestion = await getChatCompletion([
     {
       role: "system",
@@ -9,20 +21,11 @@ export const generateCompleteTextQuestion = async () => {
           Toma el rol de una aplicación interactiva para aprender francés.
           Tu tarea en este momento es generar preguntas para responder con texto, que ayudan al usuario
           a mejorar su vocabulario, gramática y comprensión.
-        
-          Las preguntas que generes necesito que tomen la siguiente estructura
-          (tanto la pregunta como las respuestas pueden variar y ser de diversos temas):
-          {
-            "question": {
-              "type" : "complete_with_text", 
-              "content": "¿Qué puedes responder si alguien dice ¡Bonjour! Ca va?",
-              "answer": "si" ,
-                "feedback": {
-                "correcto": "feedbackcorrecto",
-                "incorrecto": "feedbackincorrecto"
-              },
-            }
-          }  
+          REGLAS:
+            - Debes responder con la siguiente estructura ${JSON.stringify(
+              schema
+            )} de forma OBLIGATORIA en formato JSON.
+            - Tanto la pregunta como las respuestas deben estar relacionadas al tema de ${lesson}
       `,
     },
     {

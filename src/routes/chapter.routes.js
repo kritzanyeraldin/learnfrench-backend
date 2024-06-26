@@ -14,11 +14,17 @@ const chapterSchema = z.object({
 });
 
 const levelIdSchema = z.object({ id: parseStringToInteger() });
-const userIdSchema = z.object({ id: parseStringToInteger() });
+const userSchema = z.object({
+  userId: parseStringToInteger(),
+  preferencesUser: z.string,
+  sublevelId: parseStringToInteger(),
+});
 const chapterNameSchema = z.object({ name: z.string() });
+const sublevelIdSchema = z.object({ sublevelId: parseStringToInteger() });
 
 router.get("/chapters/sublevel/:sublevelId", async (req, res) => {
   try {
+    const MOCKED_USER_ID = 1;
     const { error, data: params } = sublevelIdSchema.safeParse(req.params);
     if (error) {
       return res.status(404).json({
@@ -29,19 +35,29 @@ router.get("/chapters/sublevel/:sublevelId", async (req, res) => {
     const chapters = await prisma.chapter.findMany({
       where: {
         sublevelId: params.sublevelId,
+        userId: MOCKED_USER_ID,
+        // userPreference: req.params.p,
       },
       include: {
         Lesson: true,
+        CompletedUserLesson: {
+          where: {
+            userId: MOCKED_USER_ID,
+          },
+          select: {
+            lessonId: true,
+          },
+        },
       },
     });
-
     return res.json(
       chapters.map((chapter) => {
-        const { Lesson, ...restChapter } = chapter;
+        const { Lesson, CompletedUserLesson, ...restChapter } = chapter;
 
         return {
           ...restChapter,
           lessons: Lesson,
+          completedLessonsIds: CompletedUserLesson.map((cl) => cl.lessonId),
         };
       })
     );
@@ -68,7 +84,6 @@ router.get("/chapter/:chapter", async (req, res) => {
         Lesson: true,
       },
     });
-
     if (!chapter)
       return res.status(400).json({
         message: "chapter doesn't exists",
@@ -78,116 +93,116 @@ router.get("/chapter/:chapter", async (req, res) => {
   }
 });
 
-const MOCK_DATA = {
-  A: {
-    name: "Básico",
-    alias: "A",
-    sublevels: {
-      A1: {
-        name: "Basico 1",
-        alias: "A1",
-        chapters: [
-          {
-            name: "<chapter_name>",
-            lessons: [
-              {
-                name: "<lesson_name>",
-                description: "<lesson_description>",
-              },
-            ],
-          },
-        ],
-      },
-      A2: {
-        name: "Basico 2",
-        alias: "A2",
-        chapters: [
-          {
-            name: "<chapter_name>",
-            lessons: [
-              {
-                name: "<lesson_name>",
-                description: "<lesson_description>",
-              },
-            ],
-          },
-        ],
-      },
-      A3: {
-        name: "Basico 3",
-        alias: "A3",
-        chapters: [
-          {
-            name: "<chapter_name>",
-            lessons: [
-              {
-                name: "<lesson_name>",
-                description: "<lesson_description>",
-              },
-            ],
-          },
-        ],
-      },
-    },
-  },
-  B: {
-    name: "Intermedio",
-    alias: "B",
-    sublevels: {
-      B1: {
-        name: "Intermedio 1",
-        alias: "B1",
-        chapters: [
-          {
-            name: "<chapter_name>",
-            lessons: [
-              {
-                name: "<lesson_name>",
-                description: "<lesson_description>",
-              },
-            ],
-          },
-        ],
-      },
-      B2: {
-        name: "Intermedio 2",
-        alias: "B2",
-        chapters: [
-          {
-            name: "<chapter_name>",
-            lessons: [
-              {
-                name: "<lesson_name>",
-                description: "<lesson_description>",
-              },
-            ],
-          },
-        ],
-      },
-    },
-  },
-  C: {
-    name: "Avanzado",
-    alias: "C",
-    sublevels: {
-      C1: {
-        name: "Avanzado 1",
-        alias: "C1",
-        chapters: [
-          {
-            name: "<chapter_name>",
-            lessons: [
-              {
-                name: "<lesson_name>",
-                description: "<lesson_description>",
-              },
-            ],
-          },
-        ],
-      },
-    },
-  },
-};
+// const MOCK_DATA = {
+//   A: {
+//     name: "Básico",
+//     alias: "A",
+//     sublevels: {
+//       A1: {
+//         name: "Basico 1",
+//         alias: "A1",
+//         chapters: [
+//           {
+//             name: "<chapter_name>",
+//             lessons: [
+//               {
+//                 name: "<lesson_name>",
+//                 description: "<lesson_description>",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//       A2: {
+//         name: "Basico 2",
+//         alias: "A2",
+//         chapters: [
+//           {
+//             name: "<chapter_name>",
+//             lessons: [
+//               {
+//                 name: "<lesson_name>",
+//                 description: "<lesson_description>",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//       A3: {
+//         name: "Basico 3",
+//         alias: "A3",
+//         chapters: [
+//           {
+//             name: "<chapter_name>",
+//             lessons: [
+//               {
+//                 name: "<lesson_name>",
+//                 description: "<lesson_description>",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//     },
+//   },
+//   B: {
+//     name: "Intermedio",
+//     alias: "B",
+//     sublevels: {
+//       B1: {
+//         name: "Intermedio 1",
+//         alias: "B1",
+//         chapters: [
+//           {
+//             name: "<chapter_name>",
+//             lessons: [
+//               {
+//                 name: "<lesson_name>",
+//                 description: "<lesson_description>",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//       B2: {
+//         name: "Intermedio 2",
+//         alias: "B2",
+//         chapters: [
+//           {
+//             name: "<chapter_name>",
+//             lessons: [
+//               {
+//                 name: "<lesson_name>",
+//                 description: "<lesson_description>",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//     },
+//   },
+//   C: {
+//     name: "Avanzado",
+//     alias: "C",
+//     sublevels: {
+//       C1: {
+//         name: "Avanzado 1",
+//         alias: "C1",
+//         chapters: [
+//           {
+//             name: "<chapter_name>",
+//             lessons: [
+//               {
+//                 name: "<lesson_name>",
+//                 description: "<lesson_description>",
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//     },
+//   },
+// };
 
 const getSublevelSchema = (alias) =>
   z.object({
@@ -363,31 +378,45 @@ router.get("/all-chapters", async (req, res) => {
   }
 });
 
-router.get("/chapter-user/:id", async (req, res) => {
+router.get("/chapters-user/:userPreference", async (req, res) => {
   try {
-    const { error, data: params } = userIdSchema.safeParse(req.params);
-    if (error) {
-      return res.status(404).json({
-        message: "Bad payload",
-        data: error.formErrors.fieldErrors,
-      });
-    }
-
-    const chapter = await prisma.chapter.findUnique({
+    const MOCKED_USER_ID = 1;
+    const { error, data: params } = sublevelIdSchema.safeParse(req.params);
+    // if (error) {
+    //   return res.status(404).json({
+    //     message: "Bad payload",
+    //     data: error.formErrors.fieldErrors,
+    //   });
+    // }
+    const chapters = await prisma.chapter.findMany({
       where: {
-        userId: params.id,
+        // sublevelId: params.sublevelId,
+        userId: MOCKED_USER_ID,
+        userPreference: req.params.userPreference,
       },
       include: {
-        level: true,
-        sublevel: true,
         Lesson: true,
+        CompletedUserLesson: {
+          where: {
+            userId: MOCKED_USER_ID,
+          },
+          select: {
+            lessonId: true,
+          },
+        },
       },
     });
+    return res.json(
+      chapters.map((chapter) => {
+        const { Lesson, CompletedUserLesson, ...restChapter } = chapter;
 
-    if (!chapter)
-      return res.status(400).json({
-        message: "chapter doesn't exists",
-      });
+        return {
+          ...restChapter,
+          lessons: Lesson,
+          completedLessonsIds: CompletedUserLesson.map((cl) => cl.lessonId),
+        };
+      })
+    );
   } catch (error) {
     return res.status(500).json({ message: "error" });
   }

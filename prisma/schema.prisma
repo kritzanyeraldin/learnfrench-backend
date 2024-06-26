@@ -62,6 +62,7 @@ model Chapter {
   id                           Int                            @id @default(autoincrement())
   name                         String
   userId                       Int?
+  userPreference               String?
   levelId                      Int
   sublevelId                   Int
   createdAt                    DateTime?                      @default(now())

@@ -1,6 +1,34 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateCompleteOptionsQuestion = async () => {
+const schema = {
+  question: {
+    type: "complete_with_options",
+    content:
+      'Complete la frase con la opción correcta: "Je vais ___ cinéma ce soir."',
+    options: [
+      {
+        content: "au",
+        right: true,
+        feedback:
+          "Correcto, 'au'. 'Au' se usa antes de 'cinéma' para indicar el destino. Es una contracción de 'à le'.",
+      },
+      {
+        content: "à",
+        right: false,
+        feedback:
+          "Incorrecto. 'À' se utiliza antes de palabras que no se combinan con el artículo definido, como 'à la'. En este caso, 'cinéma' requiere 'au'.",
+      },
+      {
+        content: "aux",
+        right: false,
+        feedback:
+          "Incorrecto. 'Aux' es la forma plural de 'au'. 'Cinéma' es singular, así que la forma correcta es 'au'.",
+      },
+    ],
+  },
+};
+
+export const generateCompleteOptionsQuestion = async (lesson) => {
   const generatedQuestion = await getChatCompletion([
     {
       role: "system",
@@ -9,32 +37,12 @@ export const generateCompleteOptionsQuestion = async () => {
         Toma el rol de una aplicación interactiva para aprender francés.
         Tu tarea es generar preguntas para completar, que ayudan al usuario
         a mejorar su vocabulario, gramática y comprensión.
-      
-        Las respuestas que generes necesito que tomen la siguiente estructura
-        (tanto la pregunta como las respuestas pueden variar y ser de diversos temas):
-        {
-          "question": {
-            "type" : "complete_with_options",
-            "content": "Complete la frase con la opción correcta: \"Je vais ___ cinéma ce soir.\"",
-            "options": [
-              {
-                "content": "au",
-                "right": true,
-                "feedback": "Correcto, 'au'. 'Au' se usa antes de 'cinéma' para indicar el destino. Es una contracción de 'à le'."
-              },
-              {
-                "content": "à",
-                "right": false,
-                "feedback": "Incorrecto. 'À' se utiliza antes de palabras que no se combinan con el artículo definido, como 'à la'. En este caso, 'cinéma' requiere 'au'."
-              },
-              {
-                "content": "aux",
-                "right": false,
-                "feedback": "Incorrecto. 'Aux' es la forma plural de 'au'. 'Cinéma' es singular, así que la forma correcta es 'au'."
-              }
-            ]
-          }
-        }  
+        REGLAS:
+          - Debes responder con la siguiente estructura ${JSON.stringify(
+            schema
+          )} de forma OBLIGATORIA en formato JSON.
+          - Tanto la pregunta como las respuestas deben estar realacionadas al tema ${lesson}) 
+          - Siempre debe existir una respuesta correcta. (OBLIGATORIO)
     `,
     },
     {

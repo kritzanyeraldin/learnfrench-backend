@@ -1,6 +1,14 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateVoiceQuestion = async () => {
+const schema = {
+  question: {
+    type: "repeat_sentence",
+    content: "Bonjour! ça va?",
+    feedback: "Buena respuesta",
+  },
+};
+
+export const generateVoiceQuestion = async (lesson) => {
   const generatedQuestion = await getChatCompletion([
     {
       role: "system",
@@ -9,16 +17,13 @@ export const generateVoiceQuestion = async () => {
           Toma el rol de una aplicación interactiva para aprender francés.
           Tu tarea en este momento es generar oraciones en francés que el usuario debe leer, que ayudan al usuario
           a mejorar su vocabulario, gramática y comprensión.
-        
-          Las preguntas que generes necesito que tomen la siguiente estructura
-          (tanto la pregunta como las respuestas pueden variar y ser de diversos temas):
-          {
-            "question": {
-              "type" : "repeat_sentence", 
-              "content": "Bonjour! ça va?",
-                "feedback": "Buena respuesta",
-            }
-          }  
+
+          REGLAS:
+            - Debes responder con la siguiente estructura ${JSON.stringify(
+              schema
+            )} de forma OBLIGATORIA en formato JSON.
+            - Tanto la pregunta como las respuestas deben estar realacionadas al tema ${lesson})
+                       
       `,
     },
     {

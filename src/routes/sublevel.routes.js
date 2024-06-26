@@ -110,10 +110,25 @@ router.post("/new-sublevel", async (req, res) => {
 
 router.get("/all-sublevels", async (req, res) => {
   try {
+    const MOCKED_USER_ID = 1;
     const allSubLevels = await prisma.sublevel.findMany({
       include: {
         _count: {
-          select: { Chapter: true },
+          select: {
+            Chapter: {
+              where: {
+                userId: null,
+              },
+            },
+          },
+        },
+        CompletedUserChapter: {
+          where: {
+            userId: MOCKED_USER_ID,
+          },
+          select: {
+            id: true,
+          },
         },
       },
       orderBy: {
@@ -124,13 +139,17 @@ router.get("/all-sublevels", async (req, res) => {
     return res.json(
       Object.fromEntries(
         allSubLevels.map((sublevel) => {
-          const { _count, ...restSublevel } = sublevel;
+          const { _count, CompletedUserChapter, ...restSublevel } = sublevel;
+          const progressPercentage = parseFloat(
+            ((CompletedUserChapter.length / _count.Chapter) * 100).toFixed(2)
+          );
 
           return [
             sublevel.alias,
             {
               ...restSublevel,
               chapters: _count.Chapter,
+              progressPercentage,
             },
           ];
         })
@@ -141,4 +160,56 @@ router.get("/all-sublevels", async (req, res) => {
   }
 });
 
+router.get("/all-sublevels-user/:userId/:userPreference", async (req, res) => {
+  try {
+    const MOCKED_USER_ID = 1;
+    const allSubLevels = await prisma.sublevel.findMany({
+      include: {
+        _count: {
+          select: {
+            Chapter: {
+              where: {
+                userId: MOCKED_USER_ID,
+                userPreference: req.params.userPreference,
+              },
+            },
+          },
+        },
+        CompletedUserChapter: {
+          where: {
+            userId: MOCKED_USER_ID,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        alias: "asc",
+      },
+    });
+    console.log(allSubLevels);
+    return res.json(
+      Object.fromEntries(
+        allSubLevels.map((sublevel) => {
+          const { _count, CompletedUserChapter, ...restSublevel } = sublevel;
+          const progressPercentage = parseFloat(
+            ((CompletedUserChapter.length / _count.Chapter) * 100).toFixed(2)
+          );
+
+          return [
+            sublevel.alias,
+            {
+              ...restSublevel,
+              chapters: _count.Chapter,
+              progressPercentage,
+            },
+          ];
+        })
+      )
+    );
+  } catch (error) {
+    return res.status(500).json({ message: "error" });
+  }
+});
 export default router;

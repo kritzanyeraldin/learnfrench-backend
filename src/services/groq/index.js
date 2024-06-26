@@ -10,3 +10,6 @@ export * from "./generateQualifingExam.js";
 export * from "./generateCompleteTextQuestion.js";
 export * from "./generateOrderSentenceQuestion.js";
 export * from "./generateVoiceSentenceQuestion.js";
+export * from "./generatedThemesSublevelsUser.js";
+export * from "./generateGrammar.js";
+export * from "./generateVocabulary.js";
