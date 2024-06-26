@@ -1,7 +1,7 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
 const schema = {
-  question: {
+  Repeatquestion: {
     type: "repeat_sentence",
     content: "Bonjour! ça va?",
     feedback: "Buena respuesta",

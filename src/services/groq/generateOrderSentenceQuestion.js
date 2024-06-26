@@ -1,7 +1,7 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
 const schema = {
-  question: {
+  Orderquestion: {
     type: "order_sentence",
     content: "est / la / France / capitale / de / Paris",
     answer: "France est la capitale de Paris",

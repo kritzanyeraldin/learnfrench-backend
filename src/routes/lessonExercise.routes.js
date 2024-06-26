@@ -44,7 +44,7 @@ const orderQuestionSchema = z.object({
 });
 
 const voiceQuestionSchema = z.object({
-  Voicequestion: z.object({
+  Repeatquestion: z.object({
     type: z.string(),
     content: z.string(),
     feedback: z.string(),

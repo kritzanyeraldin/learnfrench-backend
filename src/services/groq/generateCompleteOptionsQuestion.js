@@ -1,7 +1,7 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
 const schema = {
-  question: {
+  Optionsquestion: {
     type: "complete_with_options",
     content:
       'Complete la frase con la opción correcta: "Je vais ___ cinéma ce soir."',

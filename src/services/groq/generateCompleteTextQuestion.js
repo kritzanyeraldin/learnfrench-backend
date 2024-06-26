@@ -1,7 +1,7 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
 const schema = {
-  question: {
+  Textquestion: {
     type: "complete_with_text",
     content: "¿Qué puedes responder si alguien dice ¡Bonjour! Ca va?",
     answer: "si",
