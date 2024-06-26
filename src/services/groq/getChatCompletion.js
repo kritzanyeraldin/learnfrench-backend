@@ -3,6 +3,9 @@ import { constants } from "../../config/index.js";
 
 export const getChatCompletion = async (messages) => {
   const chatCompletion = await groq.chat.completions.create({
+    response_format: {
+      type: "json_object",
+    },
     messages,
     model: constants.MODEL_NAME,
   });

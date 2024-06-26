@@ -1,52 +1,137 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
+const schema = {
+  A: {
+    name: "Básico",
+    alias: "A",
+    sublevels: {
+      A1: {
+        name: "Basico 1",
+        alias: "A1",
+        chapters: [
+          {
+            name: "<chapter_name>",
+            lessons: [
+              {
+                name: "<lesson_name>",
+                description: "<lesson_description>",
+              },
+            ],
+          },
+        ],
+      },
+      A2: {
+        name: "Basico 2",
+        alias: "A2",
+        chapters: [
+          {
+            name: "<chapter_name>",
+            lessons: [
+              {
+                name: "<lesson_name>",
+                description: "<lesson_description>",
+              },
+            ],
+          },
+        ],
+      },
+      A3: {
+        name: "Basico 3",
+        alias: "A3",
+        chapters: [
+          {
+            name: "<chapter_name>",
+            lessons: [
+              {
+                name: "<lesson_name>",
+                description: "<lesson_description>",
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  B: {
+    name: "Intermedio",
+    alias: "B",
+    sublevels: {
+      A1: {
+        name: "Intermedio 1",
+        alias: "B1",
+        chapters: [
+          {
+            name: "<chapter_name>",
+            lessons: [
+              {
+                name: "<lesson_name>",
+                description: "<lesson_description>",
+              },
+            ],
+          },
+        ],
+      },
+      B2: {
+        name: "Intermedio 2",
+        alias: "B2",
+        chapters: [
+          {
+            name: "<chapter_name>",
+            lessons: [
+              {
+                name: "<lesson_name>",
+                description: "<lesson_description>",
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  C: {
+    name: "Avanzado",
+    alias: "C",
+    sublevels: {
+      A1: {
+        name: "Avanzado 1",
+        alias: "C1",
+        chapters: [
+          {
+            name: "<chapter_name>",
+            lessons: [
+              {
+                name: "<lesson_name>",
+                description: "<lesson_description>",
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+};
+
 export const generateThemesSublevels = async () => {
   const generatedQuestion = await getChatCompletion([
     {
       role: "system",
       content: `
-                CONTEXTO:
-                Toma el rol de una aplicación interactiva para aprender francés.
-                En la aplicacion existen 3 niveles para que el usuario pueda aprender francés: Básico, Intermedio y Avanzado.
-                Cada nivel cuenta con subniveles, de la siguiente forma:
-                - Básico tiene 3 subniveles: Básico 1, Básico 2 y Básico 3
-                - Intermedio tiene 2 subniveles: Intermedio 1 y Intermedio 2
-                - Avanzado tiene 1 subnivel: Avanzado 1
-                Cada subnivel consta de 5 capítulos. Cada capítulo tiene 4 temas.
-                Tu tarea es generar los titulos de cada capitulo y temas.
-                Los capitulos deben abarcar conceptos amplios y generales del aprendizaje del idioma francés.
-                Además, deben estar relacionados de manera que los conocimientos de los niveles anteriores se utilicen y refuercen en los niveles superiores.
-                Los temas deben estar relacionados al titulo de cada capitulo.
-                Los temas deben enfocarse en mejorar el vocabulario, la gramática y la comprensión del usuario.
-                
-                Las respuestas deben seguir la siguiente estructura: (OBLIGATORIO)
-                {
-                    "Nivel": {
-                        "nivel": "Basico",
-                        "Subnivel": {
-                            "subnivel": "Basico 1",
-                            "capitulos":[
-                                "id":"Capitulo 1"
-                                "titulo":"Introduccion al idioma frances"
-                                "temas": [
-                                    {
-                                        "id": "Tema 1",
-                                        "titulo": "Saludos",
-                                        "descripcion": "Aprende como decir hola e introducirte"
-                                    },
-                                    ]
-                                ]
-                        }
-                    }
-                }
-                `,
+        Eres una base de datos capítulos y lecciones variadas pero relevantes para el aprendizaje francés,
+        estos capítulos y lecciones se encuentran clasificados por nivel (A, B, C) y subnivel (A1, A2, A3, B1, B2, C1).
+        Debes responder con la siguiente estructura ${JSON.stringify(
+          schema
+        )} de forma OBLIGATORIA en formato JSON.
+
+        REGLAS:
+          - Cada subnivel consta de 5 capítulos OBLIGATORIAMENTE. Cada capítulo tiene 4 lecciones OBLIGATORIAMENTE.
+          - Los temas deben ser diversos y progresivos siempre (OBLIGATORIO).
+      `,
     },
     {
       role: "user",
       content: `
-                Genera los temas de cada capítulo.
-                - Respondeme únicamente lo que estoy solicitando (OBLIGATORIO).
-                `,
+        Genera los capítulos y lecciones en español (OBLIGATORIO).
+      `,
     },
   ]);
 
