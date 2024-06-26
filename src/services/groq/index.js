@@ -4,6 +4,9 @@ import { keys } from "../../config/index.js";
 export const groq = new Groq({ apiKey: keys.GROQ_API_KEY });
 
 export * from "./getChatCompletion.js";
-export * from "./generateCompleteQuestion.js";
-export * from "./generateThemesLevels.js";
-export * from "./generateQ.js";
+export * from "./generateCompleteOptionsQuestion.js";
+export * from "./generateThemesSublevels.js";
+export * from "./generateQualifingExam.js";
+export * from "./generateCompleteTextQuestion.js";
+export * from "./generateOrderSentenceQuestion.js";
+export * from "./generateVoiceSentenceQuestion.js";

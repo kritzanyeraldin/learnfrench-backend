@@ -5,8 +5,7 @@ export async function main() {
   const completions = await Promise.all([
     // groqService.generateCompleteQuestion(),
     // groqService.generateCompleteQuestion()
-    // groqService.generateThemesLevels(),
-    groqService.generateQ(),
+    groqService.generateThemesLevels(),
   ]);
 
   completions.forEach((completion) => {

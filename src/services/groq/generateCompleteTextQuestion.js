@@ -1,10 +1,10 @@
-import { getChatCompletion } from './getChatCompletion.js'
+import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateCompleteQuestion2 = async () =>  {
+export const generateCompleteTextQuestion = async () => {
   const generatedQuestion = await getChatCompletion([
     {
-        "role": "system",
-        "content": `
+      role: "system",
+      content: `
           CONTEXTO:
           Toma el rol de una aplicación interactiva para aprender francés.
           Tu tarea en este momento es generar preguntas para responder con texto, que ayudan al usuario
@@ -23,19 +23,19 @@ export const generateCompleteQuestion2 = async () =>  {
               },
             }
           }  
-      `
-      },
-      {
-        "role": "user",
-        "content": `
+      `,
+    },
+    {
+      role: "user",
+      content: `
           Genera una pregunta para responder con texto en francés.
           - Proporciona una pregunta que pida al usuario seguir una conversación.
           - Deja que el usuario conteste, y evalúe si la respuesta es correcta o no.
           - Proporciona feedback en español basado en la respuesta del usuario
           - Respondeme únicamente lo que estoy solicitando (OBLIGATORIO).
-        `
-      }
-  ])
-  
-  return generatedQuestion
-}
+        `,
+    },
+  ]);
+
+  return generatedQuestion;
+};

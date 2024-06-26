@@ -1,6 +1,6 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateQ = async () => {
+export const generateQualifingExam = async () => {
   const generatedQuestion = await getChatCompletion([
     {
       role: "system",

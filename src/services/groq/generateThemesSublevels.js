@@ -1,6 +1,6 @@
 import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateThemesLevels = async () => {
+export const generateThemesSublevels = async () => {
   const generatedQuestion = await getChatCompletion([
     {
       role: "system",
@@ -49,5 +49,6 @@ export const generateThemesLevels = async () => {
                 `,
     },
   ]);
+
   return generatedQuestion;
 };

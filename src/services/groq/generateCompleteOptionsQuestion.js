@@ -1,10 +1,10 @@
-import { getChatCompletion } from './getChatCompletion.js'
+import { getChatCompletion } from "./getChatCompletion.js";
 
-export const generateCompleteQuestion = async () =>  {
+export const generateCompleteOptionsQuestion = async () => {
   const generatedQuestion = await getChatCompletion([
     {
-      "role": "system",
-      "content": `
+      role: "system",
+      content: `
         CONTEXTO:
         Toma el rol de una aplicación interactiva para aprender francés.
         Tu tarea es generar preguntas para completar, que ayudan al usuario
@@ -35,19 +35,19 @@ export const generateCompleteQuestion = async () =>  {
             ]
           }
         }  
-    `
+    `,
     },
     {
-      "role": "user",
-      "content": `
+      role: "user",
+      content: `
         Genera una pregunta de completar la frase en francés.
         - Proporciona la frase con una palabra faltante.
         - Ofrece tres opciones de respuesta, donde una es correcta y dos son incorrectas.
         - Asegúrate de que la pregunta sea clara y la opción correcta sea educativa para el usuario.
         - Respondeme únicamente lo que estoy solicitando (OBLIGATORIO).
-      `
+      `,
     },
-  ])
-  
-  return generatedQuestion
-}
+  ]);
+
+  return generatedQuestion;
+};

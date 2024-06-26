@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../db.js";
 import { z } from "zod";
 import { parseStringToInteger } from "../../utils/parseStringToInteger.js";
+import { groqService } from "../services/index.js";
 
 const router = Router();
 
@@ -72,36 +73,42 @@ router.get("/chapter/:chapter", async (req, res) => {
   }
 });
 
-router.post("/new-chapter", async (req, res) => {
+router.get("/new-chapter", async (req, res) => {
   try {
-    if (!req.body)
-      return res.status(404).json({
-        message: "Invalid payload",
-      });
+    // if (!req.body)
+    //   return res.status(404).json({
+    //     message: "Invalid payload",
+    //   });
 
-    const { error, data: chapter } = chapterSchema.safeParse(req.body);
+    // const { error, data: chapter } = chapterSchema.safeParse(req.body);
 
-    if (error) {
-      return res.status(404).json({
-        message: "Bad payload",
-        data: error.formErrors.fieldErrors,
-      });
-    }
-    const foundChapter = await prisma.chapter.findUnique({
-      where: {
-        alias: chapter.alias,
-      },
-    });
+    const chaptersSublevels = await groqService.generateThemesSublevels();
 
-    if (foundChapter)
-      return res.status(400).json({
-        message: "Email already exists",
-      });
+    if (!chaptersSublevels) return "No se pudo generar los capitulos";
 
-    const newChapter = await prisma.chapter.create({
-      data: chapter,
-    });
-    return res.json(newChapter);
+    console.log(chaptersSublevels);
+
+    // if (error) {
+    //   return res.status(404).json({
+    //     message: "Bad payload",
+    //     data: error.formErrors.fieldErrors,
+    //   });
+    // }
+    // const foundChapter = await prisma.chapter.findUnique({
+    //   where: {
+    //     alias: chapter.alias,
+    //   },
+    // });
+
+    // if (foundChapter)
+    //   return res.status(400).json({
+    //     message: "Email already exists",
+    //   });
+
+    // const newChapter = await prisma.chapter.create({
+    //   data: chapter,
+    // });
+    // return res.json(newChapter);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "error" });
