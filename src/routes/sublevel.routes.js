@@ -110,11 +110,30 @@ router.post("/new-sublevel", async (req, res) => {
 
 router.get("/all-sublevels", async (req, res) => {
   try {
-    const allSubLevels = await prisma.sublevel.findMany();
+    const allSubLevels = await prisma.sublevel.findMany({
+      include: {
+        _count: {
+          select: { Chapter: true },
+        },
+      },
+      orderBy: {
+        alias: "asc",
+      },
+    });
 
     return res.json(
       Object.fromEntries(
-        allSubLevels.map((elemento) => [elemento.alias, elemento])
+        allSubLevels.map((sublevel) => {
+          const { _count, ...restSublevel } = sublevel;
+
+          return [
+            sublevel.alias,
+            {
+              ...restSublevel,
+              chapters: _count.Chapter,
+            },
+          ];
+        })
       )
     );
   } catch (error) {

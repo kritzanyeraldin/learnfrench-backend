@@ -17,29 +17,34 @@ const levelIdSchema = z.object({ id: parseStringToInteger() });
 const userIdSchema = z.object({ id: parseStringToInteger() });
 const chapterNameSchema = z.object({ name: z.string() });
 
-router.get("/chapter-level/:id", async (req, res) => {
+router.get("/chapters/sublevel/:sublevelId", async (req, res) => {
   try {
-    const { error, data: params } = levelIdSchema.safeParse(req.params);
+    const { error, data: params } = sublevelIdSchema.safeParse(req.params);
     if (error) {
       return res.status(404).json({
         message: "Bad payload",
         data: error.formErrors.fieldErrors,
       });
     }
-    const chapter = await prisma.chapter.findUnique({
+    const chapters = await prisma.chapter.findMany({
       where: {
-        levelId: params.levelId,
+        sublevelId: params.sublevelId,
       },
       include: {
-        sublevel: true,
         Lesson: true,
       },
     });
 
-    if (!chapter)
-      return res.status(400).json({
-        message: "chapter doesn't exists",
-      });
+    return res.json(
+      chapters.map((chapter) => {
+        const { Lesson, ...restChapter } = chapter;
+
+        return {
+          ...restChapter,
+          lessons: Lesson,
+        };
+      })
+    );
   } catch (error) {
     return res.status(500).json({ message: "error" });
   }
